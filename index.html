@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>App de Beleza & Agendamentos</title>
+  
+  <!-- SDK Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     /* VARIABLES & THEME (Cores Neutras) */
     :root {
@@ -26,10 +30,8 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* IMAGEM DE FUNDO GLOBAL */
     body {
       background-color: var(--bg-color);
-      /* Substitua 'sua-imagem.jpg' pelo caminho/nome da sua imagem salva no computador */
       background-image: url('sua-imagem.jpg');
       background-size: cover;
       background-position: center;
@@ -65,6 +67,9 @@
       top: 0;
       z-index: 100;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     header h1 {
@@ -73,9 +78,20 @@
       letter-spacing: 0.5px;
     }
 
+    .btn-logout {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      width: auto;
+    }
+
     /* NAVIGATION TABS */
     nav {
-      display: flex;
+      display: none; /* Exibido apenas quando autenticado */
       background: #ffffff;
       border-bottom: 1px solid var(--border);
     }
@@ -207,6 +223,8 @@
       cursor: pointer;
       padding: 0;
       margin-top: 4px;
+      text-align: center;
+      display: block;
     }
 
     /* DASHBOARD METRICS */
@@ -320,18 +338,38 @@
   <div class="app-container">
     <header>
       <h1 id="appHeaderTitle">Gestão de Beleza</h1>
+      <button id="btnLogout" class="btn-logout" onclick="handleLogout()" style="display: none;">Sair</button>
     </header>
 
     <!-- MENU DE NAVEGAÇÃO -->
-    <nav>
+    <nav id="appNav">
       <button class="nav-btn active" onclick="switchView('proDashboardView')">Painel</button>
       <button class="nav-btn" onclick="switchView('proConfigView')">Cadastros</button>
       <button class="nav-btn" onclick="switchView('staffPortalView')">Funcionários</button>
       <button class="nav-btn" onclick="switchView('clientBookingView')">Cliente</button>
     </nav>
 
+    <!-- 0. TELA DE LOGIN / CADASTRO VIA SUPABASE -->
+    <section id="authView" class="view active">
+      <div class="card">
+        <h3 id="authTitle">Acesso do Profissional</h3>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="authEmail" placeholder="seuemail@exemplo.com">
+        </div>
+        <div class="form-group">
+          <label>Senha</label>
+          <input type="password" id="authPassword" placeholder="******">
+        </div>
+        
+        <button id="btnAuthSubmit" class="btn-primary" onclick="handleAuthSubmit()">Entrar</button>
+        
+        <button class="btn-link" id="btnToggleAuthMode" onclick="toggleAuthMode()">Não tem uma conta? Cadastre-se</button>
+      </div>
+    </section>
+
     <!-- 1. PAINEL DO PROFISSIONAL -->
-    <section id="proDashboardView" class="view active">
+    <section id="proDashboardView" class="view">
       <div class="card">
         <div class="profile-header">
           <img id="dashLogo" src="https://via.placeholder.com/60" class="profile-img" alt="Logo">
@@ -341,7 +379,7 @@
           </div>
         </div>
         <div class="share-link-box">
-           Link de Agendamento:<br>
+            Link de Agendamento:<br>
           <strong id="shareLinkText">https://appbeleza.com/agendar/meu-salao</strong>
         </div>
       </div>
@@ -424,7 +462,6 @@
           <input type="text" id="cfgAddress" value="Rua das Flores, 123 - Centro">
         </div>
         <button class="btn-primary" onclick="saveEstablishment()">Salvar Dados</button>
-        <button class="btn-link" onclick="forgotPassword()">Esqueceu a senha? (Recuperar via SMS/WhatsApp)</button>
       </div>
 
       <!-- Cadastrar Funcionários e Comissões por Serviço -->
@@ -565,9 +602,18 @@
 
   <script>
     /* ===================================================
+       CONFIGURAÇÃO DO SUPABASE
+    =================================================== */
+    // Substitua pelas credenciais do seu projeto Supabase:
+    const SUPABASE_URL = 'https://SUO_PROJETO.supabase.co';
+    const SUPABASE_KEY = 'SUA_CHAVE_ANON_PUBLIC';
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    /* ===================================================
        ESTADO GLOBAL DA APLICAÇÃO (DATABASE SIMULADA)
     =================================================== */
-    const registeredPhones = ["(83) 99999-9999"]; // Trava de telefone único
+    const registeredPhones = ["(83) 99999-9999"];
 
     let appState = {
       establishment: {
@@ -588,29 +634,102 @@
       products: [
         { id: 201, name: "Shampoo Pós-Química", price: 60.00 }
       ],
-      // Horários configurados pelo profissional (Ativo/Desativo)
       timeSlots: [
         { time: "08:00", active: true, booked: false },
         { time: "09:00", active: true, booked: false },
         { time: "10:00", active: true, booked: false },
-        { time: "11:00", active: false, booked: false }, // Desativado pelo pro
+        { time: "11:00", active: false, booked: false },
         { time: "14:00", active: true, booked: false },
         { time: "15:00", active: true, booked: false },
         { time: "16:00", active: true, booked: false }
       ],
-      // Agendamentos e Vendas
       appointments: [],
       sales: [],
       selectedClientSlot: null
     };
 
     /* ===================================================
-       1. SEGURANÇA E BLOQUEIOS SOLICITADOS
+       1. AUTENTICAÇÃO SUPABASE E PROTEÇÃO
     =================================================== */
-    // Desativar a função Inspecionar Elemento (Botão Direito, F12, Ctrl+Shift+I, etc)
+    let isLoginMode = true;
+
+    function toggleAuthMode() {
+      isLoginMode = !isLoginMode;
+      document.getElementById('authTitle').innerText = isLoginMode ? 'Acesso do Profissional' : 'Novo Cadastro Profissional';
+      document.getElementById('btnAuthSubmit').innerText = isLoginMode ? 'Entrar' : 'Cadastrar';
+      document.getElementById('btnToggleAuthMode').innerText = isLoginMode 
+        ? 'Não tem uma conta? Cadastre-se' 
+        : 'Já possui cadastro? Faça Login';
+    }
+
+    async function handleAuthSubmit() {
+      const email = document.getElementById('authEmail').value;
+      const password = document.getElementById('authPassword').value;
+
+      if (!email || !password) {
+        alert('Por favor, preencha o e-mail e a senha.');
+        return;
+      }
+
+      if (isLoginMode) {
+        // Login
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) {
+          alert('Erro ao realizar login: ' + error.message);
+        } else {
+          alert('Login realizado com sucesso!');
+          checkUserSession();
+        }
+      } else {
+        // Cadastro
+        const { data, error } = await supabaseClient.auth.signUp({ email, password });
+        if (error) {
+          alert('Erro ao realizar cadastro: ' + error.message);
+        } else {
+          alert('Cadastro realizado! Se o seu projeto exigir confirmação de e-mail, verifique sua caixa de entrada antes de entrar.');
+          toggleAuthMode();
+        }
+      }
+    }
+
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      checkUserSession();
+    }
+
+    async function checkUserSession() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      
+      const nav = document.getElementById('appNav');
+      const btnLogout = document.getElementById('btnLogout');
+
+      if (session) {
+        // Profissional autenticado
+        nav.style.display = 'flex';
+        btnLogout.style.display = 'block';
+        switchView('proDashboardView');
+      } else {
+        // Não autenticado
+        nav.style.display = 'none';
+        btnLogout.style.display = 'none';
+        
+        // Ocultar todas as visões e mostrar a tela de Auth
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById('authView').classList.add('active');
+      }
+    }
+
+    // Monitora mudanças de estado de autenticação em tempo real
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      checkUserSession();
+    });
+
+    /* ===================================================
+       2. SEGURANÇA E BLOQUEIOS
+    =================================================== */
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) {
-      if (e.keyCode == 123) return false; // F12
+      if (e.keyCode == 123) return false;
       if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
       if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
       if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
@@ -618,31 +737,34 @@
     };
 
     /* ===================================================
-       2. NAVEGAÇÃO ENTRE ABAS
+       3. NAVEGAÇÃO ENTRE ABAS
     =================================================== */
     function switchView(viewId) {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       
-      document.getElementById(viewId).classList.add('active');
-      event.currentTarget.classList.add('active');
+      const targetView = document.getElementById(viewId);
+      if (targetView) {
+        targetView.classList.add('active');
+      }
 
-      // Atualizar interface de acordo com a aba ativada
+      if (event && event.currentTarget && event.currentTarget.classList) {
+        event.currentTarget.classList.add('active');
+      }
+
       renderDashboard();
       renderClientBooking();
       renderStaffPortal();
     }
 
     /* ===================================================
-       3. LÓGICA DO PAINEL DO PROFISSIONAL (DASHBOARD)
+       4. LÓGICA DO PAINEL DO PROFISSIONAL (DASHBOARD)
     =================================================== */
     function renderDashboard() {
-      // Perfil
       document.getElementById('dashName').innerText = appState.establishment.name;
       document.getElementById('dashLogo').src = appState.establishment.logo;
       document.getElementById('dashAreas').innerText = appState.establishment.areas.join(' • ');
 
-      // Métricas
       let entradasTotal = 0;
       let saidasComissao = 0;
       let atendimentosConfirmados = 0;
@@ -664,7 +786,6 @@
       document.getElementById('mAtendDia').innerText = atendimentosConfirmados;
       document.getElementById('mAtendMes').innerText = atendimentosConfirmados;
 
-      // Lista de Atendimentos Pendentes (Com Botão Confirmar)
       const pendingList = document.getElementById('pendingServicesList');
       pendingList.innerHTML = '';
 
@@ -685,14 +806,12 @@
         });
       }
 
-      // Dropdown de Venda de Produtos
       const prodSelect = document.getElementById('dashProductSelect');
       prodSelect.innerHTML = '';
       appState.products.forEach(p => {
         prodSelect.innerHTML += `<option value="${p.id}">${p.name} - R$ ${p.price.toFixed(2)}</option>`;
       });
 
-      // Relatório de Funcionários
       const staffReport = document.getElementById('staffReportList');
       staffReport.innerHTML = '';
       appState.staff.forEach(s => {
@@ -712,7 +831,6 @@
       });
     }
 
-    // Botão "Confirmar" ao lado do serviço quando o cliente paga
     function confirmPayment(appointmentId) {
       const app = appState.appointments.find(a => a.id === appointmentId);
       if (app) {
@@ -733,12 +851,11 @@
     }
 
     /* ===================================================
-       4. CONFIGURAÇÕES & CADASTROS PELO PROFISSIONAL
+       5. CONFIGURAÇÕES & CADASTROS PELO PROFISSIONAL
     =================================================== */
     function saveEstablishment() {
       const phoneInput = document.getElementById('cfgPhone').value;
 
-      // Validação de Telefone Único
       if (phoneInput !== appState.establishment.phone && registeredPhones.includes(phoneInput)) {
         alert("Este telefone já está sendo utilizado por outro cadastro!");
         return;
@@ -762,13 +879,6 @@
 
       alert("Dados do estabelecimento atualizados!");
       renderDashboard();
-    }
-
-    function forgotPassword() {
-      const phone = prompt("Digite seu telefone cadastrado:");
-      if (phone) {
-        alert(`Um código de verificação foi enviado via SMS/WhatsApp para ${phone}.`);
-      }
     }
 
     function addStaff() {
@@ -827,7 +937,7 @@
     }
 
     /* ===================================================
-       5. PORTAL DO FUNCIONÁRIO
+       6. PORTAL DO FUNCIONÁRIO
     =================================================== */
     function renderStaffPortal() {
       const select = document.getElementById('staffSelectPortal');
@@ -861,7 +971,7 @@
     }
 
     /* ===================================================
-       6. AGENDAMENTO PELO CLIENTE
+       7. AGENDAMENTO PELO CLIENTE
     =================================================== */
     function renderClientBooking() {
       document.getElementById('cliName').innerText = appState.establishment.name;
@@ -869,14 +979,12 @@
       document.getElementById('cliAreas').innerText = appState.establishment.areas.join(' • ');
       document.getElementById('cliAddressText').innerText = appState.establishment.address;
 
-      // Select de Categorias (Multi-modalidade)
       const catSelect = document.getElementById('cliCategorySelect');
       catSelect.innerHTML = '<option value="">Selecione a área...</option>';
       appState.establishment.areas.forEach(a => {
         catSelect.innerHTML += `<option value="${a}">${a}</option>`;
       });
 
-      // Select de Funcionários
       const staffSelect = document.getElementById('cliStaffSelect');
       staffSelect.innerHTML = '<option value="">Selecione quem vai te atender...</option>';
       appState.staff.forEach(s => {
@@ -898,13 +1006,11 @@
       });
     }
 
-    // Oculta horários desativados OU preenchidos/agendados
     function renderClientSlots() {
       const grid = document.getElementById('cliSlotsGrid');
       grid.innerHTML = '';
 
       appState.timeSlots.forEach((slot, idx) => {
-        // Se estiver ativo E NÃO estiver preenchido/agendado
         if (slot.active && !slot.booked) {
           const isSelected = appState.selectedClientSlot === slot.time;
           grid.innerHTML += `
@@ -939,7 +1045,6 @@
       const service = appState.services.find(s => s.id === srvId);
       const staff = appState.staff.find(s => s.id === staffId);
 
-      // Agendar
       appState.appointments.push({
         id: Date.now(),
         serviceName: service.name,
@@ -951,7 +1056,6 @@
         confirmed: false
       });
 
-      // Marcar horário como preenchido (não aparecerá mais para o cliente)
       const slot = appState.timeSlots.find(s => s.time === slotTime);
       if (slot) slot.booked = true;
 
@@ -960,9 +1064,9 @@
       renderClientBooking();
     }
 
-    // Inicialização
+    // Inicialização da verificação de sessão e renderizações
     renderProSlotsManagement();
-    renderDashboard();
+    checkUserSession();
   </script>
 </body>
 </html>
