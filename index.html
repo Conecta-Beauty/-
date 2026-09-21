@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    /* VARIABLES & THEME (Cores Neutras) */
+    /* VARIABLES & THEME */
     :root {
       --bg-color: #f8f9fa;
       --card-bg: rgba(255, 255, 255, 0.95);
@@ -32,24 +32,17 @@
 
     body {
       background-color: var(--bg-color);
-      background-image: url('sua-imagem.jpg');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
       color: var(--text);
       display: flex;
       justify-content: center;
       min-height: 100vh;
     }
 
-    /* CONTAINER ESTILO CELULAR */
     .app-container {
       width: 100%;
       max-width: 480px;
       min-height: 100vh;
-      background-color: rgba(248, 249, 250, 0.85);
-      backdrop-filter: blur(8px);
+      background-color: rgba(248, 249, 250, 0.95);
       box-shadow: 0 0 20px rgba(0,0,0,0.15);
       display: flex;
       flex-direction: column;
@@ -57,7 +50,6 @@
       padding-bottom: 30px;
     }
 
-    /* HEADER */
     header {
       background: var(--primary);
       color: #ffffff;
@@ -66,7 +58,6 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -75,7 +66,6 @@
     header h1 {
       font-size: 1.1rem;
       font-weight: 600;
-      letter-spacing: 0.5px;
     }
 
     .btn-logout {
@@ -89,9 +79,8 @@
       width: auto;
     }
 
-    /* NAVIGATION TABS */
     nav {
-      display: none; /* Exibido apenas quando autenticado */
+      display: none;
       background: #ffffff;
       border-bottom: 1px solid var(--border);
     }
@@ -106,7 +95,6 @@
       color: var(--text-muted);
       cursor: pointer;
       border-bottom: 3px solid transparent;
-      transition: all 0.2s;
     }
 
     nav button.active {
@@ -114,7 +102,6 @@
       border-bottom-color: var(--primary);
     }
 
-    /* VIEWS */
     .view {
       display: none;
       padding: 16px;
@@ -125,7 +112,6 @@
       display: block;
     }
 
-    /* CARDS & UI COMPONENTS */
     .card {
       background: var(--card-bg);
       border-radius: 12px;
@@ -143,7 +129,6 @@
       padding-bottom: 6px;
     }
 
-    /* FORMS & INPUTS */
     .form-group {
       margin-bottom: 12px;
     }
@@ -156,34 +141,13 @@
       color: var(--text-muted);
     }
 
-    input, select, button, textarea {
+    input, select, button {
       width: 100%;
       padding: 10px 12px;
       border: 1px solid var(--border);
       border-radius: 8px;
       font-size: 0.9rem;
       outline: none;
-    }
-
-    input:focus, select:focus {
-      border-color: var(--primary);
-    }
-
-    .checkbox-group {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .checkbox-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.85rem;
-    }
-
-    .checkbox-item input {
-      width: auto;
     }
 
     .btn-primary {
@@ -195,23 +159,18 @@
       padding: 12px;
       border-radius: 8px;
       margin-top: 8px;
-      transition: background 0.2s;
     }
 
-    .btn-primary:active {
-      opacity: 0.9;
-    }
-
-    .btn-confirm {
-      background: var(--success);
+    .btn-secondary {
+      background: var(--accent);
       color: white;
       border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
-      width: auto;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      margin-top: 8px;
     }
 
     .btn-link {
@@ -221,63 +180,64 @@
       text-decoration: underline;
       font-size: 0.8rem;
       cursor: pointer;
-      padding: 0;
-      margin-top: 4px;
+      margin-top: 8px;
       text-align: center;
       display: block;
     }
 
-    /* DASHBOARD METRICS */
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .metric-card {
-      background: #ffffff;
+    /* BOX LINK DE COMPARTILHAMENTO */
+    .share-link-box {
+      background: #eef2f5;
       padding: 12px;
       border-radius: 8px;
-      border: 1px solid var(--border);
-      text-align: center;
+      border: 1px dashed var(--primary);
+      margin-top: 10px;
     }
 
-    .metric-card span {
-      display: block;
+    .share-link-box label {
+      font-weight: bold;
       font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .metric-card strong {
-      font-size: 1.1rem;
       color: var(--primary);
-    }
-
-    /* LISTS & ITEMS */
-    .item-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .item-row:last-child {
-      border-bottom: none;
-    }
-
-    .item-info {
-      font-size: 0.85rem;
-    }
-
-    .item-info span {
       display: block;
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      margin-bottom: 4px;
     }
 
-    /* TIME SLOTS */
+    .share-input-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .share-input-group input {
+      font-size: 0.8rem;
+      background: #fff;
+    }
+
+    .share-input-group button {
+      width: auto;
+      white-space: nowrap;
+      padding: 8px 12px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .profile-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #ddd;
+    }
+
     .slots-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -295,41 +255,9 @@
       cursor: pointer;
     }
 
-    .slot-btn.disabled {
-      background: #e0e0e0;
-      color: #9e9e9e;
-      text-decoration: line-through;
-      cursor: not-allowed;
-    }
-
     .slot-btn.selected {
       background: var(--primary);
       color: white;
-      border-color: var(--primary);
-    }
-
-    .profile-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .profile-img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: #ddd;
-    }
-
-    .share-link-box {
-      background: #eef2f5;
-      padding: 8px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      word-break: break-all;
-      margin-top: 6px;
     }
   </style>
 </head>
@@ -341,15 +269,12 @@
       <button id="btnLogout" class="btn-logout" onclick="handleLogout()" style="display: none;">Sair</button>
     </header>
 
-    <!-- MENU DE NAVEGAÇÃO -->
     <nav id="appNav">
       <button class="nav-btn active" onclick="switchView('proDashboardView')">Painel</button>
       <button class="nav-btn" onclick="switchView('proConfigView')">Cadastros</button>
-      <button class="nav-btn" onclick="switchView('staffPortalView')">Funcionários</button>
-      <button class="nav-btn" onclick="switchView('clientBookingView')">Cliente</button>
     </nav>
 
-    <!-- 0. TELA DE LOGIN / CADASTRO VIA SUPABASE -->
+    <!-- 0. LOGIN / CADASTRO -->
     <section id="authView" class="view active">
       <div class="card">
         <h3 id="authTitle">Acesso do Profissional</h3>
@@ -363,7 +288,6 @@
         </div>
         
         <button id="btnAuthSubmit" class="btn-primary" onclick="handleAuthSubmit()">Entrar</button>
-        
         <button class="btn-link" id="btnToggleAuthMode" onclick="toggleAuthMode()">Não tem uma conta? Cadastre-se</button>
       </div>
     </section>
@@ -372,285 +296,70 @@
     <section id="proDashboardView" class="view">
       <div class="card">
         <div class="profile-header">
-          <img id="dashLogo" src="https://via.placeholder.com/60" class="profile-img" alt="Logo">
+          <img id="dashLogo" src="https://via.placeholder.com/50" class="profile-img" alt="Logo">
           <div>
-            <h2 id="dashName" style="font-size: 1.1rem;">Nome do Salão</h2>
-            <p id="dashAreas" style="font-size: 0.75rem; color: var(--text-muted);"></p>
+            <h2 id="dashName" style="font-size: 1rem;">Nome do Salão</h2>
+            <p id="dashPhone" style="font-size: 0.75rem; color: var(--text-muted);"></p>
           </div>
         </div>
+
+        <!-- BLANCO DE COMPARTILHAMENTO DO LINK DA CLIENTE -->
         <div class="share-link-box">
-            Link de Agendamento:<br>
-          <strong id="shareLinkText">https://appbeleza.com/agendar/meu-salao</strong>
-        </div>
-      </div>
-
-      <!-- Métricas financeiras e atendimentos -->
-      <div class="metrics-grid">
-        <div class="metric-card">
-          <span>Entradas</span>
-          <strong id="mEntradas">R$ 0,00</strong>
-        </div>
-        <div class="metric-card">
-          <span>Saídas (Comissões)</span>
-          <strong id="mSaidas">R$ 0,00</strong>
-        </div>
-        <div class="metric-card">
-          <span>Atend. Hoje</span>
-          <strong id="mAtendDia">0</strong>
-        </div>
-        <div class="metric-card">
-          <span>Atend. Mês</span>
-          <strong id="mAtendMes">0</strong>
-        </div>
-      </div>
-
-      <!-- Serviços Pendentes para Confirmação -->
-      <div class="card">
-        <h3>Atendimentos Pendentes</h3>
-        <div id="pendingServicesList">
-          <!-- Dinâmico -->
-        </div>
-      </div>
-
-      <!-- Vendas de Produtos -->
-      <div class="card">
-        <h3>Vender Produto ao Cliente</h3>
-        <div class="form-group">
-          <label>Selecione o Produto</label>
-          <select id="dashProductSelect"></select>
-        </div>
-        <button class="btn-primary" onclick="sellProduct()">Registrar Venda</button>
-      </div>
-
-      <!-- Relatório de Funcionários -->
-      <div class="card">
-        <h3>Relatório de Funcionários</h3>
-        <div id="staffReportList">
-          <!-- Dinâmico -->
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. CADASTROS E CONFIGURAÇÕES DO PROFISSIONAL -->
-    <section id="proConfigView" class="view">
-      <!-- Cadastro do Estabelecimento -->
-      <div class="card">
-        <h3>Dados do Estabelecimento</h3>
-        <div class="form-group">
-          <label>Nome do Estabelecimento</label>
-          <input type="text" id="cfgName" value="Studio de Beleza Elegance">
-        </div>
-        <div class="form-group">
-          <label>Telefone (Único)</label>
-          <input type="tel" id="cfgPhone" value="(83) 99999-9999">
-        </div>
-        <div class="form-group">
-          <label>Áreas de Atuação (Selecione mais de uma)</label>
-          <div class="checkbox-group">
-            <label class="checkbox-item"><input type="checkbox" value="Cabeleireiro" class="cfg-area" checked> Cabeleireiro</label>
-            <label class="checkbox-item"><input type="checkbox" value="Designer de Sobrancelha" class="cfg-area" checked> Sobrancelha</label>
-            <label class="checkbox-item"><input type="checkbox" value="Designer Nails" class="cfg-area"> Nails</label>
-            <label class="checkbox-item"><input type="checkbox" value="Maquiadora" class="cfg-area"> Maquiadora</label>
+          <label>🔗 Seu Link de Agendamento:</label>
+          <div class="share-input-group">
+            <input type="text" id="shareLinkInput" readonly>
+            <button onclick="copyShareLink()">Copiar</button>
           </div>
         </div>
-        <div class="form-group">
-          <label>URL da Imagem / Logo</label>
-          <input type="text" id="cfgLogo" value="https://via.placeholder.com/60">
-        </div>
-        <div class="form-group">
-          <label>Endereço Completo</label>
-          <input type="text" id="cfgAddress" value="Rua das Flores, 123 - Centro">
-        </div>
-        <button class="btn-primary" onclick="saveEstablishment()">Salvar Dados</button>
-      </div>
-
-      <!-- Cadastrar Funcionários e Comissões por Serviço -->
-      <div class="card">
-        <h3>Cadastrar Funcionário & Comissão</h3>
-        <div class="form-group">
-          <label>Nome do Funcionário</label>
-          <input type="text" id="staffNameInput" placeholder="Ex: Maria Silva">
-        </div>
-        <div class="form-group">
-          <label>Comissão Geral por Serviço (%)</label>
-          <input type="number" id="staffCommInput" placeholder="Ex: 30" value="30">
-        </div>
-        <button class="btn-primary" onclick="addStaff()">Cadastrar Funcionário</button>
-      </div>
-
-      <!-- Cadastrar Serviços -->
-      <div class="card">
-        <h3>Cadastrar Serviços</h3>
-        <div class="form-group">
-          <label>Categoria</label>
-          <select id="srvCategory">
-            <option value="Cabeleireiro">Cabeleireiro</option>
-            <option value="Designer de Sobrancelha">Designer de Sobrancelha</option>
-            <option value="Designer Nails">Designer Nails</option>
-            <option value="Maquiadora">Maquiadora</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Nome do Serviço</label>
-          <input type="text" id="srvName" placeholder="Ex: Corte e Escova">
-        </div>
-        <div class="form-group">
-          <label>Preço (R$)</label>
-          <input type="number" id="srvPrice" placeholder="100.00">
-        </div>
-        <button class="btn-primary" onclick="addService()">Cadastrar Serviço</button>
-      </div>
-
-      <!-- Cadastrar Produtos -->
-      <div class="card">
-        <h3>Cadastrar Produtos para Venda</h3>
-        <div class="form-group">
-          <label>Nome do Produto</label>
-          <input type="text" id="prodName" placeholder="Ex: Óleo Repardor">
-        </div>
-        <div class="form-group">
-          <label>Preço (R$)</label>
-          <input type="number" id="prodPrice" placeholder="45.00">
-        </div>
-        <button class="btn-primary" onclick="addProduct()">Cadastrar Produto</button>
-      </div>
-
-      <!-- Ativar / Desativar Horários -->
-      <div class="card">
-        <h3>Gerenciar Horários de Atendimento</h3>
-        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px;">Clique no horário para Ativar/Desativar da agenda:</p>
-        <div class="slots-grid" id="proSlotsManage">
-          <!-- Dinâmico -->
-        </div>
       </div>
     </section>
 
-    <!-- 3. PORTAL DO FUNCIONÁRIO -->
-    <section id="staffPortalView" class="view">
-      <div class="card">
-        <h3>Área Exclusiva do Funcionário</h3>
-        <div class="form-group">
-          <label>Selecione seu Nome para ver seus Dados</label>
-          <select id="staffSelectPortal" onchange="renderStaffPortal()"></select>
-        </div>
-      </div>
-
-      <div class="metrics-grid">
-        <div class="metric-card">
-          <span>Atendimentos</span>
-          <strong id="staffTotalServices">0</strong>
-        </div>
-        <div class="metric-card">
-          <span>Total Comissão</span>
-          <strong id="staffTotalCommission">R$ 0,00</strong>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Meus Serviços Realizados</h3>
-        <div id="staffHistoryList">
-          <!-- Dinâmico -->
-        </div>
-      </div>
-    </section>
-
-    <!-- 4. VISÃO DO CLIENTE (AGENDAMENTO) -->
+    <!-- 2. VISÃO DA CLIENTE (ACESSADA PELO LINK) -->
     <section id="clientBookingView" class="view">
       <div class="card">
         <div class="profile-header">
-          <img id="cliLogo" src="https://via.placeholder.com/60" class="profile-img" alt="Logo">
+          <img id="cliLogo" src="https://via.placeholder.com/50" class="profile-img" alt="Logo">
           <div>
             <h2 id="cliName" style="font-size: 1.1rem;">Studio de Beleza</h2>
-            <p id="cliAreas" style="font-size: 0.75rem; color: var(--text-muted);"></p>
+            <p id="cliAddress" style="font-size: 0.75rem; color: var(--text-muted);"></p>
           </div>
         </div>
-        <p style="font-size: 0.8rem; margin-top: 5px;" id="cliAddressText">Rua das Flores, 123</p>
-        <button class="btn-link" onclick="openLocation()">Veja como chegar ao destino</button>
       </div>
 
       <div class="card">
-        <h3>1. Escolha a Modalidade / Categoria</h3>
+        <h3>Agende seu Horário</h3>
         <div class="form-group">
-          <select id="cliCategorySelect" onchange="filterClientServices()">
-            <option value="">Selecione a área...</option>
-          </select>
+          <label>Nome Completo</label>
+          <input type="text" id="cliClientName" placeholder="Seu nome">
         </div>
-
-        <h3>2. Escolha o Serviço</h3>
         <div class="form-group">
+          <label>Selecione o Serviço</label>
           <select id="cliServiceSelect">
-            <option value="">Selecione o serviço...</option>
+            <option value="">Corte e Escova - R$ 80,00</option>
+            <option value="">Designer Sobrancelha - R$ 45,00</option>
           </select>
         </div>
-
-        <h3>3. Selecione o Profissional</h3>
         <div class="form-group">
-          <select id="cliStaffSelect">
-            <option value="">Selecione quem vai te atender...</option>
-          </select>
+          <label>Escolha o Horário</label>
+          <div class="slots-grid">
+            <button class="slot-btn selected">09:00</button>
+            <button class="slot-btn">10:00</button>
+            <button class="slot-btn">14:00</button>
+          </div>
         </div>
-
-        <h3>4. Escolha o Horário Disponível</h3>
-        <div class="slots-grid" id="cliSlotsGrid">
-          <!-- Dinâmico -->
-        </div>
-
-        <button class="btn-primary" style="margin-top: 15px;" onclick="bookAppointment()">Confirmar Agendamento</button>
+        <button class="btn-primary" onclick="alert('Agendamento enviado com sucesso!')">Confirmar Agendamento</button>
       </div>
     </section>
   </div>
 
   <script>
-    /* ===================================================
-       CONFIGURAÇÃO DO SUPABASE
-    =================================================== */
-    // Substitua pelas credenciais do seu projeto Supabase:
-    const SUPABASE_URL = 'https://cqoyxjhkohcamkpfeaos.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxb3l4amhrb2hjYW1rcGZlYW9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MzYzNTksImV4cCI6MjEwNTUxMjM1OX0.sHRboXRKgOzmOU8cr9vQB7P277DXG8YApnlwBRTPh6g';
+    /* CONFIGURAÇÃO SUPABASE */
+    const SUPABASE_URL = 'https://SEU_PROJETO.supabase.co';
+    const SUPABASE_KEY = 'SUA_CHAVE_ANON_PUBLIC';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    /* ===================================================
-       ESTADO GLOBAL DA APLICAÇÃO (DATABASE SIMULADA)
-    =================================================== */
-    const registeredPhones = ["(83) 99999-9999"];
-
-    let appState = {
-      establishment: {
-        name: "Studio Elegance",
-        phone: "(83) 99999-9999",
-        areas: ["Cabeleireiro", "Designer de Sobrancelha"],
-        logo: "https://via.placeholder.com/60",
-        address: "Rua das Flores, 123 - Centro, Campina Grande"
-      },
-      staff: [
-        { id: 1, name: "Ana Souza", commissionRate: 30 },
-        { id: 2, name: "Carla Lima", commissionRate: 40 }
-      ],
-      services: [
-        { id: 101, category: "Cabeleireiro", name: "Corte e Escova", price: 80.00 },
-        { id: 102, category: "Designer de Sobrancelha", name: "Design Simples", price: 45.00 }
-      ],
-      products: [
-        { id: 201, name: "Shampoo Pós-Química", price: 60.00 }
-      ],
-      timeSlots: [
-        { time: "08:00", active: true, booked: false },
-        { time: "09:00", active: true, booked: false },
-        { time: "10:00", active: true, booked: false },
-        { time: "11:00", active: false, booked: false },
-        { time: "14:00", active: true, booked: false },
-        { time: "15:00", active: true, booked: false },
-        { time: "16:00", active: true, booked: false }
-      ],
-      appointments: [],
-      sales: [],
-      selectedClientSlot: null
-    };
-
-    /* ===================================================
-       1. AUTENTICAÇÃO SUPABASE E PROTEÇÃO
-    =================================================== */
     let isLoginMode = true;
+    let currentUser = null;
 
     function toggleAuthMode() {
       isLoginMode = !isLoginMode;
@@ -666,26 +375,19 @@
       const password = document.getElementById('authPassword').value;
 
       if (!email || !password) {
-        alert('Por favor, preencha o e-mail e a senha.');
+        alert('Preencha o e-mail e a senha.');
         return;
       }
 
       if (isLoginMode) {
-        // Login
         const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) {
-          alert('Erro ao realizar login: ' + error.message);
-        } else {
-          alert('Login realizado com sucesso!');
-          checkUserSession();
-        }
+        if (error) alert('Erro ao entrar: ' + error.message);
       } else {
-        // Cadastro
         const { data, error } = await supabaseClient.auth.signUp({ email, password });
         if (error) {
-          alert('Erro ao realizar cadastro: ' + error.message);
+          alert('Erro ao cadastrar: ' + error.message);
         } else {
-          alert('Cadastro realizado! Se o seu projeto exigir confirmação de e-mail, verifique sua caixa de entrada antes de entrar.');
+          alert('Cadastro realizado! Faça login para acessar o painel.');
           toggleAuthMode();
         }
       }
@@ -696,375 +398,70 @@
       checkUserSession();
     }
 
-    async function checkUserSession() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      
-      const nav = document.getElementById('appNav');
-      const btnLogout = document.getElementById('btnLogout');
+    function checkUserSession() {
+      // 1. Verifica se a URL contém um parâmetro de agendamento (Ex: ?pro=ID_DO_PROFISSIONAL)
+      const urlParams = new URLSearchParams(window.location.search);
+      const proId = urlParams.get('pro');
 
-      if (session) {
-        // Profissional autenticado
-        nav.style.display = 'flex';
-        btnLogout.style.display = 'block';
-        switchView('proDashboardView');
-      } else {
-        // Não autenticado
-        nav.style.display = 'none';
-        btnLogout.style.display = 'none';
-        
-        // Ocultar todas as visões e mostrar a tela de Auth
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById('authView').classList.add('active');
+      if (proId) {
+        // Exibe diretamente a tela da cliente
+        document.getElementById('appNav').style.display = 'none';
+        document.getElementById('btnLogout').style.display = 'none';
+        showOnlyView('clientBookingView');
+        loadClientViewData(proId);
+        return;
       }
+
+      // 2. Senão, verifica se o profissional está autenticado
+      supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          currentUser = session.user;
+          document.getElementById('appNav').style.display = 'flex';
+          document.getElementById('btnLogout').style.display = 'block';
+          showOnlyView('proDashboardView');
+          generateProfessionalLink(currentUser.id);
+        } else {
+          document.getElementById('appNav').style.display = 'none';
+          document.getElementById('btnLogout').style.display = 'none';
+          showOnlyView('authView');
+        }
+      });
     }
 
-    // Monitora mudanças de estado de autenticação em tempo real
-    supabaseClient.auth.onAuthStateChange((event, session) => {
+    // Gera o Link Exclusivo do Profissional baseado na URL atual e no seu ID
+    function generateProfessionalLink(userId) {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const shareUrl = `${baseUrl}?pro=${userId}`;
+      document.getElementById('shareLinkInput').value = shareUrl;
+    }
+
+    function copyShareLink() {
+      const copyText = document.getElementById('shareLinkInput');
+      copyText.select();
+      copyText.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(copyText.value);
+      alert('Link de agendamento copiado com sucesso!');
+    }
+
+    function loadClientViewData(proId) {
+      document.getElementById('cliName').innerText = "Atendimento Profissional";
+      document.getElementById('cliAddress').innerText = "ID do Profissional: " + proId;
+    }
+
+    function showOnlyView(viewId) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      const target = document.getElementById(viewId);
+      if (target) target.classList.add('active');
+    }
+
+    function switchView(viewId) {
+      showOnlyView(viewId);
+    }
+
+    supabaseClient.auth.onAuthStateChange(() => {
       checkUserSession();
     });
 
-    /* ===================================================
-       2. SEGURANÇA E BLOQUEIOS
-    =================================================== */
-    document.addEventListener('contextmenu', event => event.preventDefault());
-    document.onkeydown = function(e) {
-      if (e.keyCode == 123) return false;
-      if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
-      if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
-      if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
-      if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
-    };
-
-    /* ===================================================
-       3. NAVEGAÇÃO ENTRE ABAS
-    =================================================== */
-    function switchView(viewId) {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      
-      const targetView = document.getElementById(viewId);
-      if (targetView) {
-        targetView.classList.add('active');
-      }
-
-      if (event && event.currentTarget && event.currentTarget.classList) {
-        event.currentTarget.classList.add('active');
-      }
-
-      renderDashboard();
-      renderClientBooking();
-      renderStaffPortal();
-    }
-
-    /* ===================================================
-       4. LÓGICA DO PAINEL DO PROFISSIONAL (DASHBOARD)
-    =================================================== */
-    function renderDashboard() {
-      document.getElementById('dashName').innerText = appState.establishment.name;
-      document.getElementById('dashLogo').src = appState.establishment.logo;
-      document.getElementById('dashAreas').innerText = appState.establishment.areas.join(' • ');
-
-      let entradasTotal = 0;
-      let saidasComissao = 0;
-      let atendimentosConfirmados = 0;
-
-      appState.appointments.forEach(a => {
-        if (a.confirmed) {
-          entradasTotal += a.price;
-          saidasComissao += (a.price * a.commissionRate) / 100;
-          atendimentosConfirmados++;
-        }
-      });
-
-      appState.sales.forEach(s => {
-        entradasTotal += s.price;
-      });
-
-      document.getElementById('mEntradas').innerText = `R$ ${entradasTotal.toFixed(2)}`;
-      document.getElementById('mSaidas').innerText = `R$ ${saidasComissao.toFixed(2)}`;
-      document.getElementById('mAtendDia').innerText = atendimentosConfirmados;
-      document.getElementById('mAtendMes').innerText = atendimentosConfirmados;
-
-      const pendingList = document.getElementById('pendingServicesList');
-      pendingList.innerHTML = '';
-
-      const pendingApps = appState.appointments.filter(a => !a.confirmed);
-      if (pendingApps.length === 0) {
-        pendingList.innerHTML = `<p style="font-size:0.8rem; color:var(--text-muted)">Nenhum atendimento pendente no momento.</p>`;
-      } else {
-        pendingApps.forEach(a => {
-          pendingList.innerHTML += `
-            <div class="item-row">
-              <div class="item-info">
-                <strong>${a.serviceName} - R$ ${a.price.toFixed(2)}</strong>
-                <span>Horário: ${a.time} | Func: ${a.staffName}</span>
-              </div>
-              <button class="btn-confirm" onclick="confirmPayment(${a.id})">Confirmar</button>
-            </div>
-          `;
-        });
-      }
-
-      const prodSelect = document.getElementById('dashProductSelect');
-      prodSelect.innerHTML = '';
-      appState.products.forEach(p => {
-        prodSelect.innerHTML += `<option value="${p.id}">${p.name} - R$ ${p.price.toFixed(2)}</option>`;
-      });
-
-      const staffReport = document.getElementById('staffReportList');
-      staffReport.innerHTML = '';
-      appState.staff.forEach(s => {
-        const staffApps = appState.appointments.filter(a => a.staffId === s.id && a.confirmed);
-        const count = staffApps.length;
-        const totalComm = staffApps.reduce((acc, a) => acc + ((a.price * a.commissionRate) / 100), 0);
-
-        staffReport.innerHTML += `
-          <div class="item-row">
-            <div class="item-info">
-              <strong>${s.name}</strong>
-              <span>Atendimentos executados: ${count}</span>
-            </div>
-            <strong style="color:var(--success); font-size:0.85rem;">Comissão: R$ ${totalComm.toFixed(2)}</strong>
-          </div>
-        `;
-      });
-    }
-
-    function confirmPayment(appointmentId) {
-      const app = appState.appointments.find(a => a.id === appointmentId);
-      if (app) {
-        app.confirmed = true;
-        alert('Pagamento confirmado e painel atualizado!');
-        renderDashboard();
-      }
-    }
-
-    function sellProduct() {
-      const pId = parseInt(document.getElementById('dashProductSelect').value);
-      const prod = appState.products.find(p => p.id === pId);
-      if (prod) {
-        appState.sales.push({ ...prod, date: new Date() });
-        alert(`Venda do produto "${prod.name}" realizada com sucesso!`);
-        renderDashboard();
-      }
-    }
-
-    /* ===================================================
-       5. CONFIGURAÇÕES & CADASTROS PELO PROFISSIONAL
-    =================================================== */
-    function saveEstablishment() {
-      const phoneInput = document.getElementById('cfgPhone').value;
-
-      if (phoneInput !== appState.establishment.phone && registeredPhones.includes(phoneInput)) {
-        alert("Este telefone já está sendo utilizado por outro cadastro!");
-        return;
-      }
-
-      const selectedAreas = Array.from(document.querySelectorAll('.cfg-area:checked')).map(cb => cb.value);
-      if (selectedAreas.length === 0) {
-        alert("Selecione pelo menos uma área de atuação!");
-        return;
-      }
-
-      appState.establishment.name = document.getElementById('cfgName').value;
-      appState.establishment.phone = phoneInput;
-      appState.establishment.areas = selectedAreas;
-      appState.establishment.logo = document.getElementById('cfgLogo').value;
-      appState.establishment.address = document.getElementById('cfgAddress').value;
-
-      if (!registeredPhones.includes(phoneInput)) {
-        registeredPhones.push(phoneInput);
-      }
-
-      alert("Dados do estabelecimento atualizados!");
-      renderDashboard();
-    }
-
-    function addStaff() {
-      const name = document.getElementById('staffNameInput').value;
-      const comm = parseFloat(document.getElementById('staffCommInput').value);
-
-      if (name && !isNaN(comm)) {
-        appState.staff.push({ id: Date.now(), name, commissionRate: comm });
-        document.getElementById('staffNameInput').value = '';
-        alert("Funcionário e comissão cadastrados!");
-        renderDashboard();
-      }
-    }
-
-    function addService() {
-      const category = document.getElementById('srvCategory').value;
-      const name = document.getElementById('srvName').value;
-      const price = parseFloat(document.getElementById('srvPrice').value);
-
-      if (name && !isNaN(price)) {
-        appState.services.push({ id: Date.now(), category, name, price });
-        document.getElementById('srvName').value = '';
-        document.getElementById('srvPrice').value = '';
-        alert("Serviço cadastrado com sucesso!");
-      }
-    }
-
-    function addProduct() {
-      const name = document.getElementById('prodName').value;
-      const price = parseFloat(document.getElementById('prodPrice').value);
-
-      if (name && !isNaN(price)) {
-        appState.products.push({ id: Date.now(), name, price });
-        document.getElementById('prodName').value = '';
-        document.getElementById('prodPrice').value = '';
-        alert("Produto cadastrado com sucesso!");
-        renderDashboard();
-      }
-    }
-
-    function renderProSlotsManagement() {
-      const grid = document.getElementById('proSlotsManage');
-      grid.innerHTML = '';
-      appState.timeSlots.forEach((slot, index) => {
-        grid.innerHTML += `
-          <button class="slot-btn ${slot.active ? 'selected' : ''}" onclick="toggleSlot(${index})">
-            ${slot.time} (${slot.active ? 'Ativo' : 'Off'})
-          </button>
-        `;
-      });
-    }
-
-    function toggleSlot(index) {
-      appState.timeSlots[index].active = !appState.timeSlots[index].active;
-      renderProSlotsManagement();
-    }
-
-    /* ===================================================
-       6. PORTAL DO FUNCIONÁRIO
-    =================================================== */
-    function renderStaffPortal() {
-      const select = document.getElementById('staffSelectPortal');
-      select.innerHTML = '';
-      appState.staff.forEach(s => {
-        select.innerHTML += `<option value="${s.id}">${s.name}</option>`;
-      });
-
-      const currentStaffId = parseInt(select.value);
-      if (!currentStaffId) return;
-
-      const staffApps = appState.appointments.filter(a => a.staffId === currentStaffId && a.confirmed);
-      const totalComm = staffApps.reduce((acc, a) => acc + ((a.price * a.commissionRate) / 100), 0);
-
-      document.getElementById('staffTotalServices').innerText = staffApps.length;
-      document.getElementById('staffTotalCommission').innerText = `R$ ${totalComm.toFixed(2)}`;
-
-      const history = document.getElementById('staffHistoryList');
-      history.innerHTML = '';
-      staffApps.forEach(a => {
-        history.innerHTML += `
-          <div class="item-row">
-            <div class="item-info">
-              <strong>${a.serviceName}</strong>
-              <span>Horário: ${a.time}</span>
-            </div>
-            <strong>Comissão: R$ ${((a.price * a.commissionRate) / 100).toFixed(2)}</strong>
-          </div>
-        `;
-      });
-    }
-
-    /* ===================================================
-       7. AGENDAMENTO PELO CLIENTE
-    =================================================== */
-    function renderClientBooking() {
-      document.getElementById('cliName').innerText = appState.establishment.name;
-      document.getElementById('cliLogo').src = appState.establishment.logo;
-      document.getElementById('cliAreas').innerText = appState.establishment.areas.join(' • ');
-      document.getElementById('cliAddressText').innerText = appState.establishment.address;
-
-      const catSelect = document.getElementById('cliCategorySelect');
-      catSelect.innerHTML = '<option value="">Selecione a área...</option>';
-      appState.establishment.areas.forEach(a => {
-        catSelect.innerHTML += `<option value="${a}">${a}</option>`;
-      });
-
-      const staffSelect = document.getElementById('cliStaffSelect');
-      staffSelect.innerHTML = '<option value="">Selecione quem vai te atender...</option>';
-      appState.staff.forEach(s => {
-        staffSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
-      });
-
-      filterClientServices();
-      renderClientSlots();
-    }
-
-    function filterClientServices() {
-      const cat = document.getElementById('cliCategorySelect').value;
-      const srvSelect = document.getElementById('cliServiceSelect');
-      srvSelect.innerHTML = '<option value="">Selecione o serviço...</option>';
-
-      const filtered = appState.services.filter(s => s.category === cat);
-      filtered.forEach(s => {
-        srvSelect.innerHTML += `<option value="${s.id}">${s.name} - R$ ${s.price.toFixed(2)}</option>`;
-      });
-    }
-
-    function renderClientSlots() {
-      const grid = document.getElementById('cliSlotsGrid');
-      grid.innerHTML = '';
-
-      appState.timeSlots.forEach((slot, idx) => {
-        if (slot.active && !slot.booked) {
-          const isSelected = appState.selectedClientSlot === slot.time;
-          grid.innerHTML += `
-            <button class="slot-btn ${isSelected ? 'selected' : ''}" onclick="selectClientSlot('${slot.time}')">
-              ${slot.time}
-            </button>
-          `;
-        }
-      });
-    }
-
-    function selectClientSlot(time) {
-      appState.selectedClientSlot = time;
-      renderClientSlots();
-    }
-
-    function openLocation() {
-      const addr = encodeURIComponent(appState.establishment.address);
-      window.open(`https://www.google.com/maps/search/?api=1&query=${addr}`, '_blank');
-    }
-
-    function bookAppointment() {
-      const srvId = parseInt(document.getElementById('cliServiceSelect').value);
-      const staffId = parseInt(document.getElementById('cliStaffSelect').value);
-      const slotTime = appState.selectedClientSlot;
-
-      if (!srvId || !staffId || !slotTime) {
-        alert("Por favor, selecione o serviço, o funcionário e o horário!");
-        return;
-      }
-
-      const service = appState.services.find(s => s.id === srvId);
-      const staff = appState.staff.find(s => s.id === staffId);
-
-      appState.appointments.push({
-        id: Date.now(),
-        serviceName: service.name,
-        price: service.price,
-        staffId: staff.id,
-        staffName: staff.name,
-        commissionRate: staff.commissionRate,
-        time: slotTime,
-        confirmed: false
-      });
-
-      const slot = appState.timeSlots.find(s => s.time === slotTime);
-      if (slot) slot.booked = true;
-
-      appState.selectedClientSlot = null;
-      alert("Agendamento realizado com sucesso! Aguarde a confirmação no atendimento.");
-      renderClientBooking();
-    }
-
-    // Inicialização da verificação de sessão e renderizações
-    renderProSlotsManagement();
     checkUserSession();
   </script>
 </body>
